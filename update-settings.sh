@@ -26,6 +26,13 @@ display_header() {
     echo ""
 }
 
+# Function to display section header
+section_header() {
+    echo ""
+    echo -e "${BOLD}${CYAN}>> $1${NC}"
+    echo -e "${CYAN}---------------------------------------${NC}"
+}
+
 # Function to run commands silently
 run_silent() {
     echo -en "   ${YELLOW}⚙️  $1... ${NC}"
