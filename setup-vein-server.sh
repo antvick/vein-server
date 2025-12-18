@@ -183,7 +183,7 @@ configure_firewall() {
     
     run_silent "Allowing game port ${PORT}/udp" "/usr/sbin/ufw allow ${PORT}/udp"
     run_silent "Allowing query port ${QUERY_PORT}/udp" "/usr/sbin/ufw allow ${QUERY_PORT}/udp"
-#    run_silent "Allowing dashboard port ${DASH_PORT}/tcp" "ufw allow ${DASH_PORT}/tcp"
+    run_silent "Allowing dashboard port ${DASH_PORT}/tcp" "ufw allow ${DASH_PORT}/tcp"
     run_silent "Allowing ssh port 22/tcp" "/usr/sbin/ufw allow 22/tcp"
     run_silent "Enabling firewall" "/usr/sbin/ufw --force enable"
 }
@@ -324,7 +324,7 @@ display_completion() {
     echo -e "   ${BOLD}Restart server:${NC} systemctl restart vein-server.service"
     echo -e "   ${BOLD}Check status:${NC} systemctl status vein-server.service"
     echo -e "   ${BOLD}View logs:${NC} journalctl -u vein-server.service -f"
-    #echo -e "   ${BOLD}View dashboard:${NC} http://$(hostname -I | awk '{print $1}'):5000"
+    echo -e "   ${BOLD}View dashboard:${NC} http://$(hostname -I | awk '{print $1}'):${DASH_PORT}"
 
     echo ""
     
@@ -344,82 +344,82 @@ display_completion() {
     fi
 }
 
-# Function to install optional dashboard - system packages only
-# ##### this needs some rework for working with debian and ubuntu likewise, so not available in this fork #####
-#install_dashboard() {
-#    section_header "Dashboard Installation"
-#    read -p "Would you like to install the dashboard at http://$(hostname -I | awk '{print $1}'):5000? (y/n): " dashboard_choice
-#
-#    # Query Port
-#    read -p "$(echo -e "${BOLD}Dashboard Port${NC} [${DASH_PORT}]: ")" input
-#    DASH_PORT=${input:-"$DASH_PORT"}
-#
-#    if [[ "$dashboard_choice" =~ ^[Yy]$ ]]; then
-#        # User wants dashboard - proceed with installation
-#        section_header "Installing Python3 and Flask"
-#        run_silent "Installing python3" "apt install -y python3"
-#        
-#        # Try to install Flask via system package manager
-#        if ! run_silent "Installing Flask via apt" "apt install -y python3-flask"; then
-#            echo -e "${RED}Failed to install Flask via system packages.${NC}"
-#            echo -e "${YELLOW}Trying alternative method with pip...${NC}"
-#            
-#            run_silent "Installing python3-pip" "apt install -y python3-pip"
-#            
-#            # Use pip with --break-system-packages as last resort
-#            if ! run_silent "Installing Flask via pip" "python3 -m pip install --break-system-packages flask"; then
-#                echo -e "${RED}Failed to install Flask. Dashboard installation aborted.${NC}"
-#                return 1
-#            fi
-#        fi
-#
-#        section_header "Setting up Dashboard Service"
-#        DASHBOARD_PATH="/home/steam/vein-dashboard"
-#        SERVICE_FILE="/etc/systemd/system/vein-dashboard.service"
-#
-#        # Setup dashboard files
-#        run_silent "Creating dashboard directory" "mkdir -p \"${DASHBOARD_PATH}\""
-#        
-#        # Copy dashboard files or fail gracefully
-#        if [ -d "dash" ]; then
-#            run_silent "Copying dashboard files" "cp -r dash/* \"${DASHBOARD_PATH}/\""
-#            run_silent "Setting dashboard permissions" "chown -R steam:steam \"${DASHBOARD_PATH}\""
-#            
-#            # Create systemd service (no virtual environment)
-#            cat <<EOF > "$SERVICE_FILE"
-#[Unit]
-#Description=VEIN Dashboard
-#After=network.target
-#
-#[Service]
-#User=steam
-#WorkingDirectory=${DASHBOARD_PATH}
-#ExecStart=/usr/bin/python3 ${DASHBOARD_PATH}/app.py
-#Restart=always
-#
-#[Install]
-#WantedBy=multi-user.target
-#EOF
-#
-#            run_silent "Reloading systemd daemon" "systemctl daemon-reload"
-#            run_silent "Enabling dashboard service" "systemctl enable vein-dashboard"
-#            run_silent "Starting dashboard service" "systemctl start vein-dashboard"
-#
-#            echo -e "${GREEN}Dashboard installed and running at http://$(hostname -I | awk '{print $1}'):5000${NC}"
-#            echo -e "${YELLOW}Dashboard installed in: ${DASHBOARD_PATH}${NC}"
-#        else
-#            echo -e "${RED}Dashboard files not found in 'dash' directory.${NC}"
-#            echo -e "${YELLOW}Dashboard installation failed - files missing.${NC}"
-#            echo -e "${YELLOW}Please ensure the 'dash' directory with dashboard files exists.${NC}"
-#            # Clean up the partial installation
-#            run_silent "Cleaning up failed installation" "rm -rf \"${DASHBOARD_PATH}\""
-#            return 1
-#        fi
-#    else
-#        # User doesn't want dashboard - skip entirely
-#        echo -e "${YELLOW}Dashboard installation skipped.${NC}"
-#    fi
-#}
+Function to install optional dashboard - system packages only
+##### this needs some rework for working with debian and ubuntu likewise, so not available in this fork #####
+install_dashboard() {
+   section_header "Dashboard Installation"
+   read -p "Would you like to install the dashboard at http://$(hostname -I | awk '{print $1}'):${DASH_PORT}? (y/n): " dashboard_choice
+
+   # Query Port
+   read -p "$(echo -e "${BOLD}Dashboard Port${NC} [${DASH_PORT}]: ")" input
+   DASH_PORT=${input:-"$DASH_PORT"}
+
+   if [[ "$dashboard_choice" =~ ^[Yy]$ ]]; then
+       # User wants dashboard - proceed with installation
+       section_header "Installing Python3 and Flask"
+       run_silent "Installing python3" "apt install -y python3"
+       
+       # Try to install Flask via system package manager
+       if ! run_silent "Installing Flask via apt" "apt install -y python3-flask"; then
+           echo -e "${RED}Failed to install Flask via system packages.${NC}"
+           echo -e "${YELLOW}Trying alternative method with pip...${NC}"
+           
+           run_silent "Installing python3-pip" "apt install -y python3-pip"
+           
+           # Use pip with --break-system-packages as last resort
+           if ! run_silent "Installing Flask via pip" "python3 -m pip install --break-system-packages flask"; then
+               echo -e "${RED}Failed to install Flask. Dashboard installation aborted.${NC}"
+               return 1
+           fi
+       fi
+
+       section_header "Setting up Dashboard Service"
+       DASHBOARD_PATH="/home/steam/vein-dashboard"
+       SERVICE_FILE="/etc/systemd/system/vein-dashboard.service"
+
+       # Setup dashboard files
+       run_silent "Creating dashboard directory" "mkdir -p \"${DASHBOARD_PATH}\""
+       
+       # Copy dashboard files or fail gracefully
+       if [ -d "dash" ]; then
+           run_silent "Copying dashboard files" "cp -r dash/* \"${DASHBOARD_PATH}/\""
+           run_silent "Setting dashboard permissions" "chown -R steam:steam \"${DASHBOARD_PATH}\""
+           
+           # Create systemd service (no virtual environment)
+           cat <<EOF > "$SERVICE_FILE"
+[Unit]
+Description=VEIN Dashboard
+After=network.target
+
+[Service]
+User=steam
+WorkingDirectory=${DASHBOARD_PATH}
+ExecStart=/usr/bin/python3 ${DASHBOARD_PATH}/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+           run_silent "Reloading systemd daemon" "systemctl daemon-reload"
+           run_silent "Enabling dashboard service" "systemctl enable vein-dashboard"
+           run_silent "Starting dashboard service" "systemctl start vein-dashboard"
+
+           echo -e "${GREEN}Dashboard installed and running at http://$(hostname -I | awk '{print $1}'):5000${NC}"
+           echo -e "${YELLOW}Dashboard installed in: ${DASHBOARD_PATH}${NC}"
+       else
+           echo -e "${RED}Dashboard files not found in 'dash' directory.${NC}"
+           echo -e "${YELLOW}Dashboard installation failed - files missing.${NC}"
+           echo -e "${YELLOW}Please ensure the 'dash' directory with dashboard files exists.${NC}"
+           # Clean up the partial installation
+           run_silent "Cleaning up failed installation" "rm -rf \"${DASHBOARD_PATH}\""
+           return 1
+       fi
+   else
+       # User doesn't want dashboard - skip entirely
+       echo -e "${YELLOW}Dashboard installation skipped.${NC}"
+   fi
+}
 
 # Main function
 main() {
@@ -437,7 +437,7 @@ main() {
     echo -e "  5. Download and install the VEIN server"
     echo -e "  6. Configure server settings"
     echo -e "  7. Set up a systemd service"
-#    echo -e "  8. Optionally install a dashboard"
+    echo -e "  8. Optionally install a dashboard"
     echo ""
     echo -e "Press ${BOLD}ENTER${NC} to begin or ${BOLD}CTRL+C${NC} to cancel..."
     read -r
@@ -475,7 +475,7 @@ main() {
     install_vein_server
     create_server_config
     create_systemd_service
-#    install_dashboard
+    install_dashboard
     display_completion
 }
 
