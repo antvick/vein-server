@@ -22,7 +22,7 @@ Ensure you have Debian 12 or 13 installed properly, given your machine a static 
 To install the VEIN Server, please clone the repo, make the install script executable, and then run it:
 
 ```bash
-git clone https://github.com/lennoknet/vein-server.git
+git clone https://github.com/antvick/vein-server.git
 cd vein-server
 chmod +x setup-vein-server.sh
 ./setup-vein-server.sh
