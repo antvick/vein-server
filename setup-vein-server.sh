@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 # Enhanced VEIN Server Installer
 # This script installs and configures a VEIN game server
 
@@ -259,7 +261,10 @@ bVACEnabled=${VAC_ENABLED}
 [URL]
 Port=${PORT}
 EOF
-    
+
+    ENGINE_INI_FILE="${CONFIG_DIR}/Engine.ini"
+    echo -e "   ${YELLOW}⚙️  Writing engine.ini configuration...${NC}"
+    cat "${SCRIPT_DIR}/engine.ini" > "${ENGINE_INI_FILE}"    
     echo -e "   ${GREEN}✓${NC}"
 }
 
