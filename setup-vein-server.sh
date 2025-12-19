@@ -263,8 +263,8 @@ Port=${PORT}
 EOF
 
     ENGINE_INI_FILE="${CONFIG_DIR}/Engine.ini"
-    echo -e "   ${YELLOW}⚙️  Writing engine.ini configuration...${NC}"
-    cat "${SCRIPT_DIR}/engine.ini" > "${ENGINE_INI_FILE}"    
+    echo -e "   ${YELLOW}⚙️  Writing Engine.ini configuration...${NC}"
+    cat "${SCRIPT_DIR}/Engine.ini" > "${ENGINE_INI_FILE}"    
     echo -e "   ${GREEN}✓${NC}"
 }
 
