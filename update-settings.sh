@@ -66,8 +66,9 @@ configure_server_config() {
     ENGINE_INI_FILE="${CONFIG_DIR}/Engine.ini"
     echo -e "   ${YELLOW}⚙️  Updating Engine.ini configuration...${NC}"
     cat "${SCRIPT_DIR}/Engine.ini" > "${ENGINE_INI_FILE}"
-    run_silent "Restarting vein server" "systemctl start vein-server.service"
     echo -e "   ${GREEN}✓${NC}"
+    run_silent "Restarting vein server" "systemctl start vein-server.service"
+
 }
 
 # Main function
