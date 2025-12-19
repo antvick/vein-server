@@ -59,16 +59,17 @@ check_root() {
     fi
 }
 
+configure_engine_ini() {
+    CONFIG_DIR="${INSTALL_PATH}/Vein/Saved/Config/LinuxServer"
+    ENGINE_INI_FILE="${CONFIG_DIR}/Engine.ini"
+    cat "${SCRIPT_DIR}/Engine.ini" > "${ENGINE_INI_FILE}"
+}
+
 configure_server_config() {
     section_header "Updating Server Configuration"
     run_silent "Stopping vein server" "systemctl stop vein-server.service"
-    CONFIG_DIR="${INSTALL_PATH}/Vein/Saved/Config/LinuxServer"
-    ENGINE_INI_FILE="${CONFIG_DIR}/Engine.ini"
-    echo -e "   ${YELLOW}⚙️  Updating Engine.ini configuration...${NC}"
-    cat "${SCRIPT_DIR}/Engine.ini" > "${ENGINE_INI_FILE}"
-    echo -e "   ${GREEN}✓${NC}"
+    run_silent "Updating Engine.ini configuration..." configure_engine_ini
     run_silent "Restarting vein server" "systemctl start vein-server.service"
-
 }
 
 # Main function
